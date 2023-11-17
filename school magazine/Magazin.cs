@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +8,7 @@ namespace school_magazine
 {
     internal class Magazin
     {
-        public void ReadEntry() //функционл готов
+        public void ReadEntry() 
         {
             string line;
             StreamReader readFile = new StreamReader(@"C:\Users\Agerman\source\repos\school magazine\student.txt");
@@ -22,7 +22,7 @@ namespace school_magazine
             Console.WriteLine("\t******************************************");
             readFile.Close();
         }
-        public void NewEntry() //функционал готов
+        public void NewEntry() 
         {
             var student = new Student();
             StreamWriter writeFile = File.AppendText(@"C:\Users\Agerman\source\repos\school magazine\student.txt");
@@ -47,7 +47,7 @@ namespace school_magazine
                 File.WriteAllLines(@"C:\Users\Agerman\source\repos\school magazine\student.txt", allPeople);
             }
         }
-        public void DeleteEntry() //функция готова
+        public void DeleteEntry() 
         {
             int index= -1;
             var student = new Student();
@@ -62,5 +62,17 @@ namespace school_magazine
                 File.WriteAllLines(@"C:\Users\Agerman\source\repos\school magazine\student.txt", lines);
             }
         } 
+        public void PrintPeople()
+        {
+            string[] oneChild;
+            Console.Write("\tВведите класс: ");
+            int number = Convert.ToInt32(Console.ReadLine());
+            var allPeople = File.ReadAllLines(@"C:\Users\Agerman\source\repos\school magazine\student.txt").ToList();
+           foreach(var item in  allPeople)
+           {
+                oneChild = item.Split(" ");
+                if (oneChild[4] == Convert.ToString(number)) Console.WriteLine("\t"+item);
+           } 
+        }
     }
 }
