@@ -35,13 +35,13 @@ namespace school_magazine
             var student = new Student();
             var student2 = new Student();
             var allPeople = File.ReadAllLines(@"C:\Users\Agerman\source\repos\school magazine\student.txt").ToList();
-            Console.WriteLine("Введите старые данные ученика которые хотите изменить");
+            Console.WriteLine("\tВведите старые данные ученика которые хотите изменить");
             string oldInformation = student.InformationAboutStudent();
             index = allPeople.IndexOf(oldInformation);
-            if (index == -1) Console.WriteLine("Такого учащегося нет!");
+            if (index == -1) Console.WriteLine("\tТакого учащегося нет!");
             else
             {
-                Console.WriteLine("Введите новые данные");
+                Console.WriteLine("\tВведите новые данные");
                 string newInformation = student2.InformationAboutStudent();
                 allPeople[index]= newInformation;
                 File.WriteAllLines(@"C:\Users\Agerman\source\repos\school magazine\student.txt", allPeople);
