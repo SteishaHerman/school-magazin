@@ -1,11 +1,11 @@
-﻿using school_magazine.models;
+using schoolMagazine.models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace school_magazine
+namespace schoolMagazine
 {
     internal class StudentRepository : IStudentRepository
     {
@@ -23,14 +23,13 @@ namespace school_magazine
             }
         }
 
-        public void DeleteEntry(Student student)
+        public void DeleteEntry(Student student,InformationStudent studentInfo)
         {
             int index = -1;
             var lines = File.ReadAllLines(@"C:\Users\Agerman\source\repos\school magazine\student.txt").ToList();
             string value = student.Id+" "+student.Surname+" "+student.Name+" "+student.TwoName+" "+student.NumberClass+" "+student.LetterClass;
             index = lines.IndexOf(value);
-            if (index == -1)
-                Console.WriteLine("Такого учащегося нет!");
+            if (index == -1) studentInfo.NotFoundStudent();
             else
             {
                 lines.RemoveAt(index);
@@ -44,41 +43,39 @@ namespace school_magazine
             var allPeople = File.ReadAllLines(@"C:\Users\Agerman\source\repos\school magazine\student.txt").ToList();
             string oldInformation = student.Id + " " + student.Surname + " " + student.Name + " " + student.TwoName + " " + student.NumberClass + " " + student.LetterClass;
             index = allPeople.IndexOf(oldInformation);
-            if (index == -1) Console.WriteLine("\tТакого учащегося нет!");
+            if (index == -1) studentInfo.NotFoundStudent();
             else
             {
-                Console.WriteLine("\tВведите новые данные");
+                studentInfo.EditEntry();
                 student = studentInfo.InformationAboutStudent();
                 string newInformation = student.Id + " " + student.Surname + " " + student.Name + " " + student.TwoName + " " + student.NumberClass + " " + student.LetterClass;
                 allPeople[index] = newInformation;
                 File.WriteAllLines(@"C:\Users\Agerman\source\repos\school magazine\student.txt", allPeople);
             }
         }
-        public void PrintAll()
+
+        public void PrintAll(InformationStudent studentInfo)
         {
             string line;
             using (StreamReader readFile = new StreamReader(@"C:\Users\Agerman\source\repos\school magazine\student.txt"))
             {
                 line = readFile.ReadLine();
-                Console.WriteLine("\t******************************************");
                 while (line != null)
                 {
-                    Console.WriteLine("\t" + line);
+                    studentInfo.PrintAll(line);
                     line = readFile.ReadLine();
                 }
-                Console.WriteLine("\t******************************************");
             }
         }
-        public void PrintAllIdenticalPeople()
+        public void PrintAllIdenticalPeople(InformationStudent studentInfo)
         {
-            Console.Write("\tВведите класс: ");
-            int number = Convert.ToInt32(Console.ReadLine());
+            int number = studentInfo.EnterIdenticalPeople();
             var allPeople = File.ReadAllLines(@"C:\Users\Agerman\source\repos\school magazine\student.txt").ToList();
             string[] oneChild;
             foreach (var item in allPeople)
             {
                 oneChild = item.Split(" ");
-                if (oneChild[4] == Convert.ToString(number)) Console.WriteLine("\t" + item);
+                if (oneChild[4] == Convert.ToString(number)) studentInfo.PrintIdenticalPeople(item);
             }
         }
     }
