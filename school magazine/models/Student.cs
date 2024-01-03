@@ -14,6 +14,5 @@ namespace school_magazine.models
         public string TwoName { get; set; }
         public string NumberClass { get; set; }
         public string LetterClass { get; set; }
-        public string StudentStr { get; set; } = "";
     }
 }
