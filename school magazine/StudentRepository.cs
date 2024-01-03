@@ -1,86 +1,80 @@
-using schoolMagazine.models;
+using System.Configuration;
+using SchoolMagazine.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SchoolMagazine;
+using School_Magazine;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-
-namespace schoolMagazine
+namespace SchoolMagazine
 {
     internal class StudentRepository : IStudentRepository
     {
-        public IInformationStudent _studentInfo;
-        public StudentRepository(IInformationStudent studentInfo) 
+        readonly IInformationStudent _studentInfo;
+        public StudentRepository(InformationStudent studentInfo)
         {
             _studentInfo = studentInfo;
         }
-        public void CreateNewEntry(Student student)
+        public void CreateNewEntry(Student student, ApplicationContext ap)
         {
-            using (StreamWriter writeFile = File.AppendText(@"C:\Users\Agerman\source\repos\school magazine\student.txt"))
+            new Student();
+            _studentInfo.InformationAboutStudent(student);
+            ap.Students.Add(student);
+            ap.SaveChanges();
+        }
+        public void DeleteEntry(Student student, ApplicationContext ap)
+        {
+            PrintAll(ap);
+            Console.WriteLine("Введите ID,для удаления ");
+            int? number = Convert.ToInt32(Console.ReadLine());
+            var iteams = from p in ap.Students.ToList()
+                         where p.Id == number
+                        select p;
+            foreach (Student iteam in iteams)
             {
-                writeFile.Write(student.Id+" ");
-                writeFile.Write(student.Surname+ " ");
-                writeFile.Write(student.Name + " ");
-                writeFile.Write(student.TwoName + " ");
-                writeFile.Write(student.NumberClass + " ");
-                writeFile.WriteLine(student.LetterClass);
+                ap.Students.Remove(iteam);
+                ap.SaveChanges();
             }
         }
-        public void DeleteEntry(Student student)
+        public void EditEntry(Student student, ApplicationContext ap)
         {
-            int index = -1;
-            var lines = File.ReadAllLines(@"C:\Users\Agerman\source\repos\school magazine\student.txt").ToList();
-            string value = student.Id+" "+student.Surname+" "+student.Name+" "+student.TwoName+" "+student.NumberClass+" "+student.LetterClass;
-            index = lines.IndexOf(value);
-            if (index == -1) _studentInfo.NotFoundStudent();
-            else
+            Console.Write("Введите id, для выбора: ");
+            int number = Convert.ToInt32(Console.ReadLine());
+            var iteams = from p in ap.Students.ToList()
+                         where p.Id == number
+                         select p;
+            _studentInfo.EditEntry();
+            _studentInfo.InformationAboutStudent(student);
+            foreach (Student iteam in iteams)
             {
-                lines.RemoveAt(index);
-                File.WriteAllLines(@"C:\Users\Agerman\source\repos\school magazine\student.txt", lines);
+                iteam.Name = student.Name;
+                iteam.Surname = student.Surname;
+                iteam.TwoName = student.TwoName;
+                iteam.NumberClass = student.NumberClass;
+                iteam.LetterClass = student.LetterClass;
+                ap.Students.Update(iteam);
+                ap.SaveChanges();
             }
         }
-
-        public void EditEntry(Student student)
+        public void PrintAll(ApplicationContext ap)
         {
-            int index = -1;
-            var allPeople = File.ReadAllLines(@"C:\Users\Agerman\source\repos\school magazine\student.txt").ToList();
-            string oldInformation = student.Id + " " + student.Surname + " " + student.Name + " " + student.TwoName + " " + student.NumberClass + " " + student.LetterClass;
-            index = allPeople.IndexOf(oldInformation);
-            if (index == -1) _studentInfo.NotFoundStudent();
-            else
-            {
-                _studentInfo.EditEntry();
-                student = _studentInfo.InformationAboutStudent();
-                string newInformation = student.Id + " " + student.Surname + " " + student.Name + " " + student.TwoName + " " + student.NumberClass + " " + student.LetterClass;
-                allPeople[index] = newInformation;
-                File.WriteAllLines(@"C:\Users\Agerman\source\repos\school magazine\student.txt", allPeople);
-            }
+            var data = ap.Students.ToList();
+            foreach (Student entry in data)
+                Console.WriteLine($"{entry.Id})  {entry.Name} {entry.Surname} {entry.TwoName} - {entry.NumberClass}{entry.LetterClass}");
         }
-
-        public void PrintAll()
+        public void PrintAllIdenticalPeople(ApplicationContext ap)
         {
-            string line;
-            using (StreamReader readFile = new StreamReader(@"C:\Users\Agerman\source\repos\school magazine\student.txt"))
-            {
-                line = readFile.ReadLine();
-                while (line != null)
-                {
-                    _studentInfo.PrintAll(line);
-                    line = readFile.ReadLine();
-                }
-            }
-        }
-        public void PrintAllIdenticalPeople()
-        {
-            int number = _studentInfo.EnterIdenticalPeople();
-            var allPeople = File.ReadAllLines(@"C:\Users\Agerman\source\repos\school magazine\student.txt").ToList();
-            string[] oneChild;
-            foreach (var item in allPeople)
-            {
-                oneChild = item.Split(" ");
-                if (oneChild[4] == Convert.ToString(number)) _studentInfo.PrintIdenticalPeople(item);
-            }
+            Console.WriteLine("Введите цифру: ");
+            int number = Convert.ToInt32(Console.ReadLine());
+            var student = ap.Students.ToList();
+            var item = from p in student
+                       where p.NumberClass == number
+                       select p;
+            foreach (Student entry in item)
+                Console.WriteLine($"{entry.Id})  {entry.Name} {entry.Surname} {entry.TwoName} - {entry.NumberClass}{entry.LetterClass}");
         }
     }
 }
