@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "KeyOne": "User ID=postgres;Password=1234;Host=localhost;Port=5432;Database=school_magazine;Pooling=true;Connection Lifetime=0;"
+  }
+}
