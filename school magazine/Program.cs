@@ -3,8 +3,10 @@ using SchoolMagazine.Models;
 using Microsoft.Extensions.Configuration;
 using System.Configuration;
 using School_Magazine;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
-InformationStudent studentInfo = new InformationStudent(); 
+InformationStudent studentInfo = new InformationStudent();
 StudentRepository studentRepository = new StudentRepository(studentInfo);
 
 IConfiguration Configuration = new ConfigurationBuilder()
@@ -12,16 +14,18 @@ IConfiguration Configuration = new ConfigurationBuilder()
    .AddEnvironmentVariables()
    .AddCommandLine(args)
    .Build();
- 
-string section = Configuration["ConnectionStrings:KeyOne"];
+
+string section = "User ID=postgres;Password=1234;Host=localhost;Port=5432;Database=school_magazine;Pooling=true;Connection Lifetime=0;";
+
 ApplicationContext ap = new ApplicationContext(section);
 
 studentInfo.Decoreshion();
 
 while (true)
 {
-    int number = studentInfo.Menu();
-    if (number == 6) break;
+    int number = studentInfo.MenuInProgramm();
+    if (number == 7) break;
+
     if (number == 1)
     {
         studentRepository.PrintAll(ap);
@@ -37,7 +41,7 @@ while (true)
     try
     {
         if (number == 3) studentRepository.DeleteEntry(student, ap);
-   }
+    }
     catch (Exception) { Console.WriteLine("\tТакого школьника нет!"); }
     if (number == 4)
     {
@@ -45,6 +49,11 @@ while (true)
         {
             studentRepository.EditEntry(student, ap);
         }
-        catch(Exception e) { Console.WriteLine("\tТакого школьника нет"); }
+        catch (Exception e) { Console.WriteLine("\tТакого школьника нет"); }
+    }
+    if (number == 6)
+    {
+        function function = new function(ap);
+        function.ListFunction(studentInfo);
     }
 }
